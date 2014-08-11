@@ -21,24 +21,24 @@ $qperiod = mysql_query("
 SELECT DISTINCT FROM_UNIXTIME( post_time, '$period_format') period 
 FROM phpbb_posts
 ORDER BY 1"
-)  or die ("Error in query2: $qperiod. " .mysql_error());
+)  or die ("Error in qperiod: $qperiod. " .mysql_error());
 
 while( $rperiod = mysql_fetch_object($qperiod))
 {
     //Populate the table
     echo 'Populating period '.$rperiod->period.'<br>';
-    
-    
-    
-  /*
-SET @ANO    =2006;
-SET @CURROW1=0;
-SET @CURROW2=0;
 
-
-
+    
+    $q1 =mysql_query("SET @ANO    =".$rperiod->period.";")                     or die ("Error in q1: $q1. " .mysql_error());
+    $q2 =mysql_query("SET @CURROW1=0;")                                        or die ("Error in q2: $q2. " .mysql_error());
+    $q3 =mysql_query("SET @CURROW2=0;")                                        or die ("Error in q3: $q3. " .mysql_error());
+    $q4 =mysql_query("DELETE FROM rank WHERE period = ".$rperiod->period.";")  or die ("Error in q4: $q4. " .mysql_error());
+    
+    $qinsert = mysql_query("
+INSERT INTO rank
 SELECT
-  X4.user_id
+  @ano period
+, X4.user_id
 , X4.username
 , X4.row_number1 AS pos_anterior
 , X4.row_number2 AS pos_atual
@@ -55,8 +55,7 @@ FROM
 		SELECT
 		 X2.*
 		FROM
-			(
-			  
+			(			  
 			SELECT
 			 X1.*
 			, @CURROW1 := @CURROW1 + 1 AS row_number1
@@ -82,10 +81,7 @@ FROM
 				GROUP BY pu.username, pu.user_id
 				ORDER BY UPPER(pu.username)
 				) usu
-
 				LEFT JOIN
-
-
 				  (	SELECT
 					  pu.username
 					, COUNT(pp.post_id) qtd
@@ -97,7 +93,6 @@ FROM
 					GROUP BY pu.username
 					ORDER BY COUNT(pp.post_id) DESC
 					) a  ON usu.username = a.username
-
 				LEFT JOIN 
 				(
 					SELECT
@@ -111,20 +106,15 @@ FROM
 					GROUP BY pu.username
 					ORDER BY COUNT(pp.post_id) DESC
 					) b ON usu.username = b.username
-
 				ORDER BY a.qtd DESC, UPPER(b.username)
 				) X1
 			) X2
 			ORDER BY qtd2 DESC, UPPER(username)
 		) X3
-	) X4   
-   */  
+	) X4
+" )  or die ("Error in qinsert: $qinsert. " .mysql_error());
     
-    
-    
-    
-    
-    
+      
 }
 
 
