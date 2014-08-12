@@ -8,5 +8,16 @@
 
 //   '%Y %D %M %h:%i:%s %x'  
 $period_format = '%Y';
+$imgpath       = 'images/';
+
+//--RANK DETAILS column name
+$det_period     ='&nbsp; Ano &nbsp;';	
+$det_qtd        ='&nbsp; Qtd.Msg &nbsp;';
+$det_pos	='&nbsp; Rank &nbsp;';
+$det_increase   ='&nbsp; Aumento &nbsp;';
+
+
+
+
 
 ?>

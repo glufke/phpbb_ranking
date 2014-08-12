@@ -6,8 +6,7 @@
  * and open the template in the editor.
  */
 
-//Start connection
-include('rank_connection.php');
+//Start connection and definitions
 include('rank_definitions.php');
 
 mysql_query("SET NAMES 'utf8'");
@@ -35,36 +34,18 @@ while( $rperiod = mysql_fetch_object($qperiod))
     $q4 =mysql_query("DELETE FROM rank WHERE period = ".$rperiod->period.";")  or die ("Error in q4: $q4. " .mysql_error());
     
     $qinsert = mysql_query("
-INSERT INTO rank
-SELECT
-  @ano period
-, X4.user_id
-, X4.username
-, X4.row_number1 AS pos_anterior
-, X4.row_number2 AS pos_atual
-, row_number1 - row_number2 subiu
-, X4.qtd1 AS qtd_anterior
-, X4.qtd2 AS qtd_atual
-FROM 
-	(
-	SELECT
-	 X3.*
-	, @CURROW2 := @CURROW2 + 1 AS row_number2
-	FROM
-		(
-		SELECT
-		 X2.*
-		FROM
-			(			  
+INSERT INTO rank(period, user_id, username, pos_before, pos_now, increase, qtd_before, qtd_now) 
 			SELECT
-			 X1.*
-			, @CURROW1 := @CURROW1 + 1 AS row_number1
-			FROM
-			(
-			SELECT usu.username
-			, usu.user_id
-			, a.qtd AS qtd1
+                          @ANO
+, usu.user_id                        
+, usu.username
+			
+                        , NULL
+                        , NULL
+                        , NULL
+                        , a.qtd AS qtd1
 			, b.qtd AS qtd2
+
 			FROM 
 			  (
 				SELECT
@@ -106,15 +87,75 @@ FROM
 					GROUP BY pu.username
 					ORDER BY COUNT(pp.post_id) DESC
 					) b ON usu.username = b.username
-				ORDER BY a.qtd DESC, UPPER(b.username)
-				) X1
-			) X2
-			ORDER BY qtd2 DESC, UPPER(username)
-		) X3
-	) X4
+
+ORDER BY b.qtd DESC, UPPER(b.username)
+
+
 " )  or die ("Error in qinsert: $qinsert. " .mysql_error());
     
-      
+   
+    
+    $q5 =mysql_query("SET @CURROW1=0;")                                        or die ("Error in q2: $q2. " .mysql_error());
+    $q6 =mysql_query("SET @CURROW2=0;")                                        or die ("Error in q2: $q2. " .mysql_error());
+    
+$u1 =mysql_query("
+UPDATE rank y
+SET y.pos_now = (
+SELECT
+r1.rank
+FROM (
+                
+SELECT N1.*
+, @CURROW1 := @CURROW1 + 1 AS RANK
+FROM (
+  SELECT DISTINCT qtd_now as qtd1
+  FROM `rank` 
+  WHERE period=@ANO
+  ORDER BY qtd_now DESC
+  ) N1   
+ 
+) r1
+where COALESCE(r1.qtd1,999999) = COALESCE(y.qtd_now,999999)
+)
+
+,
+
+y.pos_before = (
+SELECT
+r1.rank
+FROM (
+                
+SELECT N1.*
+, @CURROW2 := @CURROW2 + 1 AS RANK
+FROM (
+  SELECT DISTINCT qtd_before as qtd1
+  FROM `rank` 
+  WHERE period=@ANO
+  ORDER BY qtd_before DESC
+  ) N1   
+ 
+) r1
+where COALESCE(r1.qtd1,999999) = COALESCE(y.qtd_before,999999)
+)
+
+
+
+WHERE y.period = @ANO
+    
+    
+    
+")                                        or die ("Error in u1: $u1. " .mysql_error());    
+    
+
+
+$u1 =mysql_query("
+UPDATE rank y
+SET y.increase =  y.pos_before - y.pos_now 
+WHERE period = @ANO")
+or die ("Error in u1: $u1. " .mysql_error());    
+
+
+    
 }
 
 
