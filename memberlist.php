@@ -17,6 +17,7 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
+include($phpbb_root_path . 'includes/functions_traducao.' . $phpEx); //projtrad
 
 
 
@@ -616,11 +617,13 @@ switch ($mode)
 			$member['posts_in_queue'] = 0;
 		}
 
+
+//proj trad !!! Se for em ingles, 
+$lingua = fnc_idioma();   //projtrad
+
+
 //proj rank
-$rank_ou = rank_output($user_id); 
-
-
-
+$rank_ou = rank_output($user_id, $lingua); 
 
 		$template->assign_vars(array(
 			'L_POSTS_IN_QUEUE'	=> $user->lang('NUM_POSTS_IN_QUEUE', $member['posts_in_queue']),

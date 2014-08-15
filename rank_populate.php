@@ -8,6 +8,7 @@
 
 //Start connection and definitions
 include('rank_definitions.php');
+include('rank_connection.php');
 
 mysql_query("SET NAMES 'utf8'");
 mysql_query('SET character_set_connection=utf8');

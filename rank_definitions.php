@@ -15,6 +15,7 @@ $det_period     ='&nbsp; Ano &nbsp;';
 $det_qtd        ='&nbsp; Qtd.Msg &nbsp;';
 $det_pos	='&nbsp; Rank &nbsp;';
 $det_increase   ='&nbsp; Aumento &nbsp;';
+$det_user       ='&nbsp; Usuário &nbsp;';
 
 
 
